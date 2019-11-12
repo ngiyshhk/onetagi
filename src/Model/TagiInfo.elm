@@ -139,6 +139,14 @@ infos =
                     |> map String.fromInt
                     |> String.join ", "
       }
+    , { text = "連続して隣り合っている同じ色はどこ"
+      , f =
+            \list ->
+                list
+                    |> discoveryColor
+                    |> map String.fromInt
+                    |> String.join ", "
+      }
     , { text = "最大から最小を引いた数"
       , f =
             \list ->
@@ -159,6 +167,48 @@ infos =
 
 type alias Tuple3 =
     { first : Int, second : List Int, third : List Int }
+
+
+type alias CTuple3 =
+    { first : Maybe CardColor, second : List Int, third : List Int }
+
+
+discoveryColor : List Card -> List Int
+discoveryColor list =
+    list
+        |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
+        |> foldl colorAccume { first = Nothing, second = [], third = [] }
+        |> finishColor
+        |> sort
+
+
+finishColor : CTuple3 -> List Int
+finishColor t =
+    case t.second of
+        [ fst ] ->
+            t.third
+
+        _ ->
+            append t.third t.second
+
+
+colorAccume : ( Int, Card ) -> CTuple3 -> CTuple3
+colorAccume ( i, c ) acc =
+    case acc.first of
+        Just bc ->
+            if bc == c.color then
+                { acc | first = Just c.color, second = i :: acc.second }
+
+            else
+                case acc.second of
+                    [ fst ] ->
+                        { acc | first = Just c.color, second = [ i ] }
+
+                    _ ->
+                        { first = Just c.color, second = [ i ], third = append acc.third acc.second }
+
+        Nothing ->
+            { acc | first = Just c.color, second = [ i ] }
 
 
 discoveryRenban : List Int -> List Int

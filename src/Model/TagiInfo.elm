@@ -221,12 +221,12 @@ discoveryRenban list =
 
         renbanAccume ( i, a ) acc =
             if a - acc.first == 1 then
-                { first = a, second = i :: acc.second, third = acc.third }
+                { acc | first = a, second = i :: acc.second }
 
             else
                 case acc.second of
                     [ fst ] ->
-                        { first = a, second = [ i ], third = acc.third }
+                        { acc | first = a, second = [ i ] }
 
                     _ ->
                         { first = a, second = [ i ], third = append acc.third acc.second }

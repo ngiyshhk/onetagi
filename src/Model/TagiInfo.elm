@@ -166,8 +166,18 @@ discoveryRenban list =
     list
         |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
         |> foldl renbanAccume { first = -2, second = [], third = [] }
-        |> .third
+        |> finishRenban
         |> sort
+
+
+finishRenban : Tuple3 -> List Int
+finishRenban t =
+    case t.second of
+        [ fst ] ->
+            t.third
+
+        _ ->
+            append t.third t.second
 
 
 renbanAccume : ( Int, Int ) -> Tuple3 -> Tuple3
@@ -177,7 +187,7 @@ renbanAccume ( i, a ) acc =
 
     else
         case acc.second of
-            fst :: [] ->
+            [ fst ] ->
                 { first = a, second = [ i ], third = acc.third }
 
             _ ->

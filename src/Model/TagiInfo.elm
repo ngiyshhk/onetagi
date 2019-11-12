@@ -130,6 +130,15 @@ infos =
                     |> Maybe.withDefault False
                     |> Bool.Extra.toString
       }
+    , { text = "連番になってるタイルはどこ"
+      , f =
+            \list ->
+                list
+                    |> map .num
+                    |> discoveryRenban
+                    |> map String.fromInt
+                    |> String.join ", "
+      }
     , { text = "最大から最小を引いた数"
       , f =
             \list ->
@@ -146,6 +155,33 @@ infos =
                 String.fromInt (maxNumM - minNumM)
       }
     ]
+
+
+type alias Tuple3 =
+    { first : Int, second : List Int, third : List Int }
+
+
+discoveryRenban : List Int -> List Int
+discoveryRenban list =
+    list
+        |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
+        |> foldl renbanAccume { first = -2, second = [], third = [] }
+        |> .third
+        |> sort
+
+
+renbanAccume : ( Int, Int ) -> Tuple3 -> Tuple3
+renbanAccume ( i, a ) acc =
+    if a - acc.first == 1 then
+        { first = a, second = i :: acc.second, third = acc.third }
+
+    else
+        case acc.second of
+            fst :: [] ->
+                { first = a, second = [ i ], third = acc.third }
+
+            _ ->
+                { first = a, second = [ i ], third = append acc.third acc.second }
 
 
 discoveryNum n list =

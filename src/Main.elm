@@ -19,7 +19,11 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List exposing (..)
 import List.FlatMap exposing (..)
+import Model.Card exposing (..)
+import Model.CardColor exposing (..)
 import Model.MainModel exposing (..)
+import Model.Msg exposing (..)
+import Model.TagiInfo exposing (..)
 import Random
 import Tuple
 import Util.ArrayUtil exposing (..)

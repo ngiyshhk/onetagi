@@ -175,6 +175,32 @@ type alias CTuple3 =
 
 discoveryColor : List Card -> List Int
 discoveryColor list =
+    let
+        finishColor t =
+            case t.second of
+                [ fst ] ->
+                    t.third
+
+                _ ->
+                    append t.third t.second
+
+        colorAccume ( i, c ) acc =
+            case acc.first of
+                Just bc ->
+                    if bc == c.color then
+                        { acc | first = Just c.color, second = i :: acc.second }
+
+                    else
+                        case acc.second of
+                            [ fst ] ->
+                                { acc | first = Just c.color, second = [ i ] }
+
+                            _ ->
+                                { first = Just c.color, second = [ i ], third = append acc.third acc.second }
+
+                Nothing ->
+                    { acc | first = Just c.color, second = [ i ] }
+    in
     list
         |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
         |> foldl colorAccume { first = Nothing, second = [], third = [] }
@@ -182,66 +208,34 @@ discoveryColor list =
         |> sort
 
 
-finishColor : CTuple3 -> List Int
-finishColor t =
-    case t.second of
-        [ fst ] ->
-            t.third
+discoveryRenban : List Int -> List Int
+discoveryRenban list =
+    let
+        finishRenban t =
+            case t.second of
+                [ fst ] ->
+                    t.third
 
-        _ ->
-            append t.third t.second
+                _ ->
+                    append t.third t.second
 
-
-colorAccume : ( Int, Card ) -> CTuple3 -> CTuple3
-colorAccume ( i, c ) acc =
-    case acc.first of
-        Just bc ->
-            if bc == c.color then
-                { acc | first = Just c.color, second = i :: acc.second }
+        renbanAccume ( i, a ) acc =
+            if a - acc.first == 1 then
+                { first = a, second = i :: acc.second, third = acc.third }
 
             else
                 case acc.second of
                     [ fst ] ->
-                        { acc | first = Just c.color, second = [ i ] }
+                        { first = a, second = [ i ], third = acc.third }
 
                     _ ->
-                        { first = Just c.color, second = [ i ], third = append acc.third acc.second }
-
-        Nothing ->
-            { acc | first = Just c.color, second = [ i ] }
-
-
-discoveryRenban : List Int -> List Int
-discoveryRenban list =
+                        { first = a, second = [ i ], third = append acc.third acc.second }
+    in
     list
         |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
         |> foldl renbanAccume { first = -2, second = [], third = [] }
         |> finishRenban
         |> sort
-
-
-finishRenban : Tuple3 -> List Int
-finishRenban t =
-    case t.second of
-        [ fst ] ->
-            t.third
-
-        _ ->
-            append t.third t.second
-
-
-renbanAccume : ( Int, Int ) -> Tuple3 -> Tuple3
-renbanAccume ( i, a ) acc =
-    if a - acc.first == 1 then
-        { first = a, second = i :: acc.second, third = acc.third }
-
-    else
-        case acc.second of
-            [ fst ] ->
-                { first = a, second = [ i ], third = acc.third }
-
-            _ ->
-                { first = a, second = [ i ], third = append acc.third acc.second }
 
 
 discoveryNum n list =

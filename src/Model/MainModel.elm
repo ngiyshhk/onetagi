@@ -1,10 +1,12 @@
 module Model.MainModel exposing (..)
 
 import Basics exposing (..)
+import Bool.Extra
 import Dict
 import Dict.Extra exposing (..)
 import List exposing (..)
 import List.FlatMap exposing (..)
+import Maybe
 import Random
 import Util.ArrayUtil exposing (..)
 
@@ -140,6 +142,9 @@ infos =
     , { text = "7はどこ"
       , f = discoveryNum 7
       }
+    , { text = "9はどこ"
+      , f = discoveryNum 9
+      }
     , { text = "奇数は何枚"
       , f =
             \list ->
@@ -173,6 +178,17 @@ infos =
                     |> filter (\a -> 2 == length (Tuple.second a))
                     |> length
                     |> String.fromInt
+      }
+    , { text = "中央の数字タイルは5以上？"
+      , f =
+            \list ->
+                list
+                    |> drop 2
+                    |> head
+                    |> Maybe.map .num
+                    |> Maybe.map (\a -> a >= 5)
+                    |> Maybe.withDefault False
+                    |> Bool.Extra.toString
       }
     , { text = "最大から最小を引いた数"
       , f =

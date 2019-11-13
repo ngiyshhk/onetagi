@@ -150,17 +150,9 @@ infos =
     , { text = "最大から最小を引いた数"
       , f =
             \list ->
-                let
-                    nums =
-                        map .num list
-
-                    maxNumM =
-                        maximum nums |> Maybe.withDefault 0
-
-                    minNumM =
-                        minimum nums |> Maybe.withDefault 0
-                in
-                String.fromInt (maxNumM - minNumM)
+                map .num list
+                    |> diffMaxMin
+                    |> String.fromInt
       }
     ]
 
@@ -171,6 +163,11 @@ type alias Tuple3 =
 
 type alias CTuple3 =
     { first : Maybe CardColor, second : List Int, third : List Int }
+
+
+diffMaxMin : List Int -> Int
+diffMaxMin list =
+    Maybe.map2 (-) (maximum list) (minimum list) |> Maybe.withDefault 0
 
 
 discoveryColor : List Card -> List Int

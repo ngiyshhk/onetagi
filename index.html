@@ -5733,17 +5733,6 @@ var $author$project$Model$TagiInfo$diffMaxMin = function (list) {
 			$elm$core$List$maximum(list),
 			$elm$core$List$minimum(list)));
 };
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$sort = function (xs) {
-	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
-};
 var $author$project$Model$TagiInfo$discoveryColor = function (list) {
 	var finishColor = function (t) {
 		var _v3 = t.second;
@@ -5751,7 +5740,8 @@ var $author$project$Model$TagiInfo$discoveryColor = function (list) {
 			var fst = _v3.a;
 			return t.third;
 		} else {
-			return A2($elm$core$List$append, t.third, t.second);
+			return $elm$core$List$reverse(
+				A2($elm$core$List$cons, t.second, t.third));
 		}
 	};
 	var colorAccume = F2(
@@ -5784,7 +5774,7 @@ var $author$project$Model$TagiInfo$discoveryColor = function (list) {
 							first: $elm$core$Maybe$Just(c.color),
 							second: _List_fromArray(
 								[i]),
-							third: A2($elm$core$List$append, acc.third, acc.second)
+							third: A2($elm$core$List$cons, acc.second, acc.third)
 						};
 					}
 				}
@@ -5798,20 +5788,19 @@ var $author$project$Model$TagiInfo$discoveryColor = function (list) {
 					});
 			}
 		});
-	return $elm$core$List$sort(
-		finishColor(
+	return finishColor(
+		A3(
+			$elm$core$List$foldl,
+			colorAccume,
+			{first: $elm$core$Maybe$Nothing, second: _List_Nil, third: _List_Nil},
 			A3(
-				$elm$core$List$foldl,
-				colorAccume,
-				{first: $elm$core$Maybe$Nothing, second: _List_Nil, third: _List_Nil},
-				A3(
-					$elm$core$List$map2,
-					F2(
-						function (a, b) {
-							return _Utils_Tuple2(a, b);
-						}),
-					A2($elm$core$List$range, 1, 9),
-					list))));
+				$elm$core$List$map2,
+				F2(
+					function (a, b) {
+						return _Utils_Tuple2(a, b);
+					}),
+				A2($elm$core$List$range, 1, 9),
+				list)));
 };
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -5824,6 +5813,9 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
 var $author$project$Model$TagiInfo$discoveryNum = F2(
 	function (n, list) {
 		return A2(
@@ -5864,8 +5856,25 @@ var $author$project$Model$TagiInfo$discoveryRenban = function (list) {
 					});
 			} else {
 				var _v1 = acc.second;
-				if (_v1.b && (!_v1.b.b)) {
-					var fst = _v1.a;
+				if (_v1.b) {
+					if (!_v1.b.b) {
+						var fst = _v1.a;
+						return _Utils_update(
+							acc,
+							{
+								first: a,
+								second: _List_fromArray(
+									[i])
+							});
+					} else {
+						return {
+							first: a,
+							second: _List_fromArray(
+								[i]),
+							third: A2($elm$core$List$cons, acc.second, acc.third)
+						};
+					}
+				} else {
 					return _Utils_update(
 						acc,
 						{
@@ -5873,13 +5882,6 @@ var $author$project$Model$TagiInfo$discoveryRenban = function (list) {
 							second: _List_fromArray(
 								[i])
 						});
-				} else {
-					return {
-						first: a,
-						second: _List_fromArray(
-							[i]),
-						third: A2($elm$core$List$append, acc.third, acc.second)
-					};
 				}
 			}
 		});
@@ -5889,23 +5891,23 @@ var $author$project$Model$TagiInfo$discoveryRenban = function (list) {
 			var fst = _v0.a;
 			return t.third;
 		} else {
-			return A2($elm$core$List$append, t.third, t.second);
+			return $elm$core$List$reverse(
+				A2($elm$core$List$cons, t.second, t.third));
 		}
 	};
-	return $elm$core$List$sort(
-		finishRenban(
+	return finishRenban(
+		A3(
+			$elm$core$List$foldl,
+			renbanAccume,
+			{first: -2, second: _List_Nil, third: _List_Nil},
 			A3(
-				$elm$core$List$foldl,
-				renbanAccume,
-				{first: -2, second: _List_Nil, third: _List_Nil},
-				A3(
-					$elm$core$List$map2,
-					F2(
-						function (a, b) {
-							return _Utils_Tuple2(a, b);
-						}),
-					A2($elm$core$List$range, 1, 9),
-					list))));
+				$elm$core$List$map2,
+				F2(
+					function (a, b) {
+						return _Utils_Tuple2(a, b);
+					}),
+				A2($elm$core$List$range, 1, 9),
+				list)));
 };
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$composeR = F3(
@@ -6761,14 +6763,25 @@ var $author$project$Model$TagiInfo$infos = _List_fromArray(
 				', ',
 				A2(
 					$elm$core$List$map,
-					$elm$core$String$fromInt,
-					$author$project$Model$TagiInfo$discoveryRenban(
+					function (s) {
+						return '[' + (s + ']');
+					},
+					A2(
+						$elm$core$List$map,
+						$elm$core$String$join(', '),
 						A2(
 							$elm$core$List$map,
-							function ($) {
-								return $.num;
-							},
-							list))));
+							$elm$core$List$map($elm$core$String$fromInt),
+							A2(
+								$elm$core$List$map,
+								$elm$core$List$sort,
+								$author$project$Model$TagiInfo$discoveryRenban(
+									A2(
+										$elm$core$List$map,
+										function ($) {
+											return $.num;
+										},
+										list)))))));
 		},
 		text: '連番になってるタイルはどこ'
 	},
@@ -6779,8 +6792,19 @@ var $author$project$Model$TagiInfo$infos = _List_fromArray(
 				', ',
 				A2(
 					$elm$core$List$map,
-					$elm$core$String$fromInt,
-					$author$project$Model$TagiInfo$discoveryColor(list)));
+					function (s) {
+						return '[' + (s + ']');
+					},
+					A2(
+						$elm$core$List$map,
+						$elm$core$String$join(', '),
+						A2(
+							$elm$core$List$map,
+							$elm$core$List$map($elm$core$String$fromInt),
+							A2(
+								$elm$core$List$map,
+								$elm$core$List$sort,
+								$author$project$Model$TagiInfo$discoveryColor(list))))));
 		},
 		text: '連続して隣り合っている同じ色はどこ'
 	},
@@ -6912,6 +6936,14 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Model$Msg$Answer = {$: 'Answer'};
 var $author$project$Model$Msg$Info = {$: 'Info'};
 var $author$project$Model$Msg$Start = {$: 'Start'};
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
 var $rundis$elm_bootstrap$Bootstrap$Internal$Button$Attrs = function (a) {
 	return {$: 'Attrs', a: a};
 };

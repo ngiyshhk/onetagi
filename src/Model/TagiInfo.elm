@@ -136,7 +136,10 @@ infos =
                 list
                     |> map .num
                     |> discoveryRenban
-                    |> map String.fromInt
+                    |> map sort
+                    |> map (map String.fromInt)
+                    |> map (String.join ", ")
+                    |> map (\s -> "[" ++ s ++ "]")
                     |> String.join ", "
       }
     , { text = "連続して隣り合っている同じ色はどこ"
@@ -144,7 +147,10 @@ infos =
             \list ->
                 list
                     |> discoveryColor
-                    |> map String.fromInt
+                    |> map sort
+                    |> map (map String.fromInt)
+                    |> map (String.join ", ")
+                    |> map (\s -> "[" ++ s ++ "]")
                     |> String.join ", "
       }
     , { text = "最大から最小を引いた数"
@@ -158,11 +164,11 @@ infos =
 
 
 type alias Tuple3 =
-    { first : Int, second : List Int, third : List Int }
+    { first : Int, second : List Int, third : List (List Int) }
 
 
 type alias CTuple3 =
-    { first : Maybe CardColor, second : List Int, third : List Int }
+    { first : Maybe CardColor, second : List Int, third : List (List Int) }
 
 
 diffMaxMin : List Int -> Int
@@ -170,7 +176,7 @@ diffMaxMin list =
     Maybe.map2 (-) (maximum list) (minimum list) |> Maybe.withDefault 0
 
 
-discoveryColor : List Card -> List Int
+discoveryColor : List Card -> List (List Int)
 discoveryColor list =
     let
         finishColor t =
@@ -179,7 +185,7 @@ discoveryColor list =
                     t.third
 
                 _ ->
-                    append t.third t.second
+                    reverse <| t.second :: t.third
 
         colorAccume ( i, c ) acc =
             case acc.first of
@@ -193,7 +199,7 @@ discoveryColor list =
                                 { acc | first = Just c.color, second = [ i ] }
 
                             _ ->
-                                { first = Just c.color, second = [ i ], third = append acc.third acc.second }
+                                { first = Just c.color, second = [ i ], third = acc.second :: acc.third }
 
                 Nothing ->
                     { acc | first = Just c.color, second = [ i ] }
@@ -202,10 +208,9 @@ discoveryColor list =
         |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
         |> foldl colorAccume { first = Nothing, second = [], third = [] }
         |> finishColor
-        |> sort
 
 
-discoveryRenban : List Int -> List Int
+discoveryRenban : List Int -> List (List Int)
 discoveryRenban list =
     let
         finishRenban t =
@@ -214,7 +219,7 @@ discoveryRenban list =
                     t.third
 
                 _ ->
-                    append t.third t.second
+                    reverse <| t.second :: t.third
 
         renbanAccume ( i, a ) acc =
             if a - acc.first == 1 then
@@ -225,14 +230,16 @@ discoveryRenban list =
                     [ fst ] ->
                         { acc | first = a, second = [ i ] }
 
+                    [] ->
+                        { acc | first = a, second = [ i ] }
+
                     _ ->
-                        { first = a, second = [ i ], third = append acc.third acc.second }
+                        { first = a, second = [ i ], third = acc.second :: acc.third }
     in
     list
         |> List.map2 (\a b -> ( a, b )) (List.range 1 9)
         |> foldl renbanAccume { first = -2, second = [], third = [] }
         |> finishRenban
-        |> sort
 
 
 discoveryNum n list =

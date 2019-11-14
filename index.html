@@ -5214,7 +5214,7 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Model$MainModel$DeliveryCard = function (a) {
+var $author$project$Model$Msg$DeliveryCard = function (a) {
 	return {$: 'DeliveryCard', a: a};
 };
 var $ccapndave$elm_flat_map$List$FlatMap$join = A2($elm$core$List$foldr, $elm$core$Basics$append, _List_Nil);
@@ -5223,9 +5223,9 @@ var $ccapndave$elm_flat_map$List$FlatMap$flatMap = F2(
 		return $ccapndave$elm_flat_map$List$FlatMap$join(
 			A2($elm$core$List$map, f, list));
 	});
-var $author$project$Model$MainModel$Blue = {$: 'Blue'};
-var $author$project$Model$MainModel$Green = {$: 'Green'};
-var $author$project$Model$MainModel$Red = {$: 'Red'};
+var $author$project$Model$CardColor$Blue = {$: 'Blue'};
+var $author$project$Model$CardColor$Green = {$: 'Green'};
+var $author$project$Model$CardColor$Red = {$: 'Red'};
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
 		repeatHelp:
@@ -5247,14 +5247,14 @@ var $elm$core$List$repeat = F2(
 	function (n, value) {
 		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
 	});
-var $author$project$Model$MainModel$makeCard = function (num) {
+var $author$project$Model$Card$makeCard = function (num) {
 	if (num === 5) {
 		return A2(
 			$elm$core$List$map,
 			function (a) {
 				return {color: a, num: num};
 			},
-			A2($elm$core$List$repeat, 2, $author$project$Model$MainModel$Green));
+			A2($elm$core$List$repeat, 2, $author$project$Model$CardColor$Green));
 	} else {
 		return A2(
 			$elm$core$List$map,
@@ -5262,12 +5262,12 @@ var $author$project$Model$MainModel$makeCard = function (num) {
 				return {color: a, num: num};
 			},
 			_List_fromArray(
-				[$author$project$Model$MainModel$Red, $author$project$Model$MainModel$Blue]));
+				[$author$project$Model$CardColor$Red, $author$project$Model$CardColor$Blue]));
 	}
 };
-var $author$project$Model$MainModel$allcards = A2(
+var $author$project$Model$Card$allcards = A2(
 	$ccapndave$elm_flat_map$List$FlatMap$flatMap,
-	$author$project$Model$MainModel$makeCard,
+	$author$project$Model$Card$makeCard,
 	A2($elm$core$List$range, 0, 9));
 var $elm$random$Random$Generator = function (a) {
 	return {$: 'Generator', a: a};
@@ -5432,7 +5432,7 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
-var $author$project$Model$MainModel$partCard = F2(
+var $author$project$Model$Card$partCard = F2(
 	function (n, cards) {
 		if (n === 4) {
 			return _List_fromArray(
@@ -5588,11 +5588,11 @@ var $author$project$Util$ArrayUtil$shuffleList = function (aList) {
 					$elm$core$List$length(aList),
 					A2($elm$random$Random$int, 0, 10000)))));
 };
-var $author$project$Model$MainModel$delivCard = function (n) {
+var $author$project$Model$Card$delivCard = function (n) {
 	return A2(
 		$elm$random$Random$map,
-		$author$project$Model$MainModel$partCard(n),
-		$author$project$Util$ArrayUtil$shuffleList($author$project$Model$MainModel$allcards));
+		$author$project$Model$Card$partCard(n),
+		$author$project$Util$ArrayUtil$shuffleList($author$project$Model$Card$allcards));
 };
 var $elm$random$Random$Generate = function (a) {
 	return {$: 'Generate', a: a};
@@ -5675,6 +5675,144 @@ var $elm$random$Random$generate = F2(
 			$elm$random$Random$Generate(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
+var $elm$core$Maybe$map2 = F3(
+	function (func, ma, mb) {
+		if (ma.$ === 'Nothing') {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var a = ma.a;
+			if (mb.$ === 'Nothing') {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var b = mb.a;
+				return $elm$core$Maybe$Just(
+					A2(func, a, b));
+			}
+		}
+	});
+var $elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Model$TagiInfo$diffMaxMin = function (list) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		A3(
+			$elm$core$Maybe$map2,
+			$elm$core$Basics$sub,
+			$elm$core$List$maximum(list),
+			$elm$core$List$minimum(list)));
+};
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$sort = function (xs) {
+	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
+};
+var $author$project$Model$TagiInfo$discoveryColor = function (list) {
+	var finishColor = function (t) {
+		var _v3 = t.second;
+		if (_v3.b && (!_v3.b.b)) {
+			var fst = _v3.a;
+			return t.third;
+		} else {
+			return A2($elm$core$List$append, t.third, t.second);
+		}
+	};
+	var colorAccume = F2(
+		function (_v2, acc) {
+			var i = _v2.a;
+			var c = _v2.b;
+			var _v0 = acc.first;
+			if (_v0.$ === 'Just') {
+				var bc = _v0.a;
+				if (_Utils_eq(bc, c.color)) {
+					return _Utils_update(
+						acc,
+						{
+							first: $elm$core$Maybe$Just(c.color),
+							second: A2($elm$core$List$cons, i, acc.second)
+						});
+				} else {
+					var _v1 = acc.second;
+					if (_v1.b && (!_v1.b.b)) {
+						var fst = _v1.a;
+						return _Utils_update(
+							acc,
+							{
+								first: $elm$core$Maybe$Just(c.color),
+								second: _List_fromArray(
+									[i])
+							});
+					} else {
+						return {
+							first: $elm$core$Maybe$Just(c.color),
+							second: _List_fromArray(
+								[i]),
+							third: A2($elm$core$List$append, acc.third, acc.second)
+						};
+					}
+				}
+			} else {
+				return _Utils_update(
+					acc,
+					{
+						first: $elm$core$Maybe$Just(c.color),
+						second: _List_fromArray(
+							[i])
+					});
+			}
+		});
+	return $elm$core$List$sort(
+		finishColor(
+			A3(
+				$elm$core$List$foldl,
+				colorAccume,
+				{first: $elm$core$Maybe$Nothing, second: _List_Nil, third: _List_Nil},
+				A3(
+					$elm$core$List$map2,
+					F2(
+						function (a, b) {
+							return _Utils_Tuple2(a, b);
+						}),
+					A2($elm$core$List$range, 1, 9),
+					list))));
+};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5686,10 +5824,7 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var $elm$core$List$sort = function (xs) {
-	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
-};
-var $author$project$Model$MainModel$discoveryNum = F2(
+var $author$project$Model$TagiInfo$discoveryNum = F2(
 	function (n, list) {
 		return A2(
 			$elm$core$String$join,
@@ -5715,6 +5850,64 @@ var $author$project$Model$MainModel$discoveryNum = F2(
 								A2($elm$core$List$range, 1, 10),
 								list))))));
 	});
+var $author$project$Model$TagiInfo$discoveryRenban = function (list) {
+	var renbanAccume = F2(
+		function (_v2, acc) {
+			var i = _v2.a;
+			var a = _v2.b;
+			if ((a - acc.first) === 1) {
+				return _Utils_update(
+					acc,
+					{
+						first: a,
+						second: A2($elm$core$List$cons, i, acc.second)
+					});
+			} else {
+				var _v1 = acc.second;
+				if (_v1.b && (!_v1.b.b)) {
+					var fst = _v1.a;
+					return _Utils_update(
+						acc,
+						{
+							first: a,
+							second: _List_fromArray(
+								[i])
+						});
+				} else {
+					return {
+						first: a,
+						second: _List_fromArray(
+							[i]),
+						third: A2($elm$core$List$append, acc.third, acc.second)
+					};
+				}
+			}
+		});
+	var finishRenban = function (t) {
+		var _v0 = t.second;
+		if (_v0.b && (!_v0.b.b)) {
+			var fst = _v0.a;
+			return t.third;
+		} else {
+			return A2($elm$core$List$append, t.third, t.second);
+		}
+	};
+	return $elm$core$List$sort(
+		finishRenban(
+			A3(
+				$elm$core$List$foldl,
+				renbanAccume,
+				{first: -2, second: _List_Nil, third: _List_Nil},
+				A3(
+					$elm$core$List$map2,
+					F2(
+						function (a, b) {
+							return _Utils_Tuple2(a, b);
+						}),
+					A2($elm$core$List$range, 1, 9),
+					list))));
+};
+var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
@@ -6245,15 +6438,6 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $elm_community$dict_extra$Dict$Extra$groupBy = F2(
 	function (keyfn, list) {
 		return A3(
@@ -6278,12 +6462,11 @@ var $elm_community$dict_extra$Dict$Extra$groupBy = F2(
 			$elm$core$Dict$empty,
 			list);
 	});
-var $elm$core$List$maximum = function (list) {
+var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
 		var xs = list.b;
-		return $elm$core$Maybe$Just(
-			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+		return $elm$core$Maybe$Just(x);
 	} else {
 		return $elm$core$Maybe$Nothing;
 	}
@@ -6318,25 +6501,14 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $elm$core$Basics$min = F2(
-	function (x, y) {
-		return (_Utils_cmp(x, y) < 0) ? x : y;
-	});
-var $elm$core$List$minimum = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(
-			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
 };
-var $author$project$Model$MainModel$infos = _List_fromArray(
+var $Chadtech$elm_bool_extra$Bool$Extra$toString = function (bool) {
+	return bool ? 'True' : 'False';
+};
+var $author$project$Model$TagiInfo$infos = _List_fromArray(
 	[
 		{
 		f: function (list) {
@@ -6446,7 +6618,7 @@ var $author$project$Model$MainModel$infos = _List_fromArray(
 						A2(
 							$elm$core$List$filter,
 							function (c) {
-								return _Utils_eq(c.color, $author$project$Model$MainModel$Red);
+								return _Utils_eq(c.color, $author$project$Model$CardColor$Red);
 							},
 							list))));
 		},
@@ -6464,7 +6636,7 @@ var $author$project$Model$MainModel$infos = _List_fromArray(
 						A2(
 							$elm$core$List$filter,
 							function (c) {
-								return _Utils_eq(c.color, $author$project$Model$MainModel$Blue);
+								return _Utils_eq(c.color, $author$project$Model$CardColor$Blue);
 							},
 							list))));
 		},
@@ -6484,20 +6656,24 @@ var $author$project$Model$MainModel$infos = _List_fromArray(
 		text: 'タイルすべての合計数'
 	},
 		{
-		f: $author$project$Model$MainModel$discoveryNum(0),
+		f: $author$project$Model$TagiInfo$discoveryNum(0),
 		text: '0はどこ'
 	},
 		{
-		f: $author$project$Model$MainModel$discoveryNum(3),
+		f: $author$project$Model$TagiInfo$discoveryNum(3),
 		text: '3はどこ'
 	},
 		{
-		f: $author$project$Model$MainModel$discoveryNum(5),
+		f: $author$project$Model$TagiInfo$discoveryNum(5),
 		text: '5はどこ'
 	},
 		{
-		f: $author$project$Model$MainModel$discoveryNum(7),
+		f: $author$project$Model$TagiInfo$discoveryNum(7),
 		text: '7はどこ'
+	},
+		{
+		f: $author$project$Model$TagiInfo$discoveryNum(9),
+		text: '9はどこ'
 	},
 		{
 		f: function (list) {
@@ -6532,7 +6708,7 @@ var $author$project$Model$MainModel$infos = _List_fromArray(
 					A2(
 						$elm$core$List$filter,
 						function (c) {
-							return _Utils_eq(c.color, $author$project$Model$MainModel$Blue);
+							return _Utils_eq(c.color, $author$project$Model$CardColor$Blue);
 						},
 						list)));
 		},
@@ -6559,21 +6735,65 @@ var $author$project$Model$MainModel$infos = _List_fromArray(
 	},
 		{
 		f: function (list) {
-			var nums = A2(
-				$elm$core$List$map,
-				function ($) {
-					return $.num;
-				},
-				list);
-			var minNumM = A2(
-				$elm$core$Maybe$withDefault,
-				0,
-				$elm$core$List$minimum(nums));
-			var maxNumM = A2(
-				$elm$core$Maybe$withDefault,
-				0,
-				$elm$core$List$maximum(nums));
-			return $elm$core$String$fromInt(maxNumM - minNumM);
+			return $Chadtech$elm_bool_extra$Bool$Extra$toString(
+				A2(
+					$elm$core$Maybe$withDefault,
+					false,
+					A2(
+						$elm$core$Maybe$map,
+						function (a) {
+							return a >= 5;
+						},
+						A2(
+							$elm$core$Maybe$map,
+							function ($) {
+								return $.num;
+							},
+							$elm$core$List$head(
+								A2($elm$core$List$drop, 2, list))))));
+		},
+		text: '中央の数字タイルは5以上？'
+	},
+		{
+		f: function (list) {
+			return A2(
+				$elm$core$String$join,
+				', ',
+				A2(
+					$elm$core$List$map,
+					$elm$core$String$fromInt,
+					$author$project$Model$TagiInfo$discoveryRenban(
+						A2(
+							$elm$core$List$map,
+							function ($) {
+								return $.num;
+							},
+							list))));
+		},
+		text: '連番になってるタイルはどこ'
+	},
+		{
+		f: function (list) {
+			return A2(
+				$elm$core$String$join,
+				', ',
+				A2(
+					$elm$core$List$map,
+					$elm$core$String$fromInt,
+					$author$project$Model$TagiInfo$discoveryColor(list)));
+		},
+		text: '連続して隣り合っている同じ色はどこ'
+	},
+		{
+		f: function (list) {
+			return $elm$core$String$fromInt(
+				$author$project$Model$TagiInfo$diffMaxMin(
+					A2(
+						$elm$core$List$map,
+						function ($) {
+							return $.num;
+						},
+						list)));
 		},
 		text: '最大から最小を引いた数'
 	}
@@ -6595,7 +6815,7 @@ var $elm$random$Random$map2 = F3(
 					seed2);
 			});
 	});
-var $author$project$Model$MainModel$cardToTuple = function (card) {
+var $author$project$Model$Card$cardToTuple = function (card) {
 	var _v0 = card.color;
 	switch (_v0.$) {
 		case 'Red':
@@ -6606,28 +6826,28 @@ var $author$project$Model$MainModel$cardToTuple = function (card) {
 			return _Utils_Tuple2(card.num, 2);
 	}
 };
-var $author$project$Model$MainModel$tupleToCard = function (tuple) {
+var $author$project$Model$Card$tupleToCard = function (tuple) {
 	switch (tuple.b) {
 		case 0:
 			var n = tuple.a;
-			return {color: $author$project$Model$MainModel$Red, num: n};
+			return {color: $author$project$Model$CardColor$Red, num: n};
 		case 1:
 			var n = tuple.a;
-			return {color: $author$project$Model$MainModel$Blue, num: n};
+			return {color: $author$project$Model$CardColor$Blue, num: n};
 		default:
 			var n = tuple.a;
-			return {color: $author$project$Model$MainModel$Green, num: n};
+			return {color: $author$project$Model$CardColor$Green, num: n};
 	}
 };
-var $author$project$Model$MainModel$sortCards = function (cards) {
+var $author$project$Model$Card$sortCards = function (cards) {
 	return A2(
 		$elm$core$List$map,
-		$author$project$Model$MainModel$tupleToCard,
+		$author$project$Model$Card$tupleToCard,
 		$elm$core$List$sort(
-			A2($elm$core$List$map, $author$project$Model$MainModel$cardToTuple, cards)));
+			A2($elm$core$List$map, $author$project$Model$Card$cardToTuple, cards)));
 };
-var $author$project$Model$MainModel$sortCardsList = function (cardListList) {
-	return A2($elm$core$List$map, $author$project$Model$MainModel$sortCards, cardListList);
+var $author$project$Model$Card$sortCardsList = function (cardListList) {
+	return A2($elm$core$List$map, $author$project$Model$Card$sortCards, cardListList);
 };
 var $elm$core$List$tail = function (list) {
 	if (list.b) {
@@ -6648,15 +6868,15 @@ var $author$project$Main$update = F2(
 						{displayNum: 1}),
 					A2(
 						$elm$random$Random$generate,
-						$author$project$Model$MainModel$DeliveryCard,
+						$author$project$Model$Msg$DeliveryCard,
 						A3(
 							$elm$random$Random$map2,
 							F2(
 								function (a, b) {
 									return _Utils_Tuple2(a, b);
 								}),
-							$author$project$Model$MainModel$delivCard(model.playerNum),
-							$author$project$Util$ArrayUtil$shuffleList($author$project$Model$MainModel$infos))));
+							$author$project$Model$Card$delivCard(model.playerNum),
+							$author$project$Util$ArrayUtil$shuffleList($author$project$Model$TagiInfo$infos))));
 			case 'DeliveryCard':
 				var _v1 = msg.a;
 				var cards = _v1.a;
@@ -6665,7 +6885,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							cards: $author$project$Model$MainModel$sortCardsList(cards),
+							cards: $author$project$Model$Card$sortCardsList(cards),
 							restInfos: newInfos
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -6689,17 +6909,9 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$Model$MainModel$Answer = {$: 'Answer'};
-var $author$project$Model$MainModel$Info = {$: 'Info'};
-var $author$project$Model$MainModel$Start = {$: 'Start'};
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
+var $author$project$Model$Msg$Answer = {$: 'Answer'};
+var $author$project$Model$Msg$Info = {$: 'Info'};
+var $author$project$Model$Msg$Start = {$: 'Start'};
 var $rundis$elm_bootstrap$Bootstrap$Internal$Button$Attrs = function (a) {
 	return {$: 'Attrs', a: a};
 };
@@ -8117,7 +8329,7 @@ var $rundis$elm_bootstrap$Bootstrap$Text$alignXl = function (dir) {
 	return {dir: dir, size: $rundis$elm_bootstrap$Bootstrap$General$Internal$XL};
 };
 var $rundis$elm_bootstrap$Bootstrap$Text$alignXlCenter = $rundis$elm_bootstrap$Bootstrap$Text$alignXl($rundis$elm_bootstrap$Bootstrap$Internal$Text$Center);
-var $author$project$Model$MainModel$toString = function (a) {
+var $author$project$Model$CardColor$toString = function (a) {
 	switch (a.$) {
 		case 'Blue':
 			return 'bg-primary';
@@ -8134,7 +8346,7 @@ var $author$project$Main$viewCard = function (card) {
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class(
-					$author$project$Model$MainModel$toString(card.color))
+					$author$project$Model$CardColor$toString(card.color))
 				]),
 			_List_fromArray(
 				[
@@ -8147,15 +8359,6 @@ var $author$project$Main$viewCard = function (card) {
 						$rundis$elm_bootstrap$Bootstrap$Card$outlinePrimary,
 						$rundis$elm_bootstrap$Bootstrap$Card$align($rundis$elm_bootstrap$Bootstrap$Text$alignXlCenter)
 					]))));
-};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
 };
 var $author$project$Main$viewInfo = function (model) {
 	var _v0 = model.restInfos;
@@ -8276,7 +8479,7 @@ var $author$project$Main$mainContent = function (model) {
 															$rundis$elm_bootstrap$Bootstrap$Button$attrs(
 															_List_fromArray(
 																[
-																	$elm$html$Html$Events$onClick($author$project$Model$MainModel$Start),
+																	$elm$html$Html$Events$onClick($author$project$Model$Msg$Start),
 																	$rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$ml1
 																]))
 														]),
@@ -8293,7 +8496,7 @@ var $author$project$Main$mainContent = function (model) {
 															$rundis$elm_bootstrap$Bootstrap$Button$attrs(
 															_List_fromArray(
 																[
-																	$elm$html$Html$Events$onClick($author$project$Model$MainModel$Info),
+																	$elm$html$Html$Events$onClick($author$project$Model$Msg$Info),
 																	$rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$ml1
 																]))
 														]),
@@ -8310,7 +8513,7 @@ var $author$project$Main$mainContent = function (model) {
 															$rundis$elm_bootstrap$Bootstrap$Button$attrs(
 															_List_fromArray(
 																[
-																	$elm$html$Html$Events$onClick($author$project$Model$MainModel$Answer),
+																	$elm$html$Html$Events$onClick($author$project$Model$Msg$Answer),
 																	$rundis$elm_bootstrap$Bootstrap$Utilities$Spacing$ml1
 																]))
 														]),

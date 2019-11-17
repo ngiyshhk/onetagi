@@ -1,0 +1,25 @@
+name: github pages
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build-deploy:
+    runs-on: node:12-alpine
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Setup Elm
+      run: yarn add elm
+
+    - name: Build
+      run: ./node_modules/.bin/elm make --output=./public/index.html src/Main.elm
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v2.4.0
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./public
